@@ -1,13 +1,19 @@
-## CreDA Protocol
+# CreDA Protocol
 
 #CreDA API Description
 Request address 
 https://contracts-elamain.creda.app/api/public/home/token/generate
 
-#Request method 
+
+Request method
+---------------
+
 GET
 
-#Request parameters 
+
+
+Request parameters
+------------------
 
 |Header Parameter|Data Type|Required|Description|
 | ------ | ------ | ------ | ------ |
@@ -16,7 +22,8 @@ GET
 | ------ | ------ | ------ | ------ |
 |address|string|yes|address informatin|
 
-#Return parameters
+Return parameters
+-----------------
 
 |Parameter Name|Data Type|Description|
 | ------ | ------ | ------ |
@@ -25,20 +32,25 @@ GET
 | data | Object | Data Object |
 
 
-data Object
+Data Object
+-----------
+
 | Parameter Name | Data Type | Description |
 | ------ | ------ | ------ |
 | score | Array | socre object |
 | timestamp | string | score timestamp |
 
-score array item description
+Score array item description
+----------------------------
+
 | Attribute Name | Data Type | Description |
 | ------ | ------ | ------ |
 | itemName | string | name of score item |
 | value | string | score value |
 
 
-#Example Return Value
+Example Return Value
+--------------------
 
      {
         "code": 200,
