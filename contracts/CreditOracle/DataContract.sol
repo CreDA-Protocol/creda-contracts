@@ -4,6 +4,7 @@ import "./AutherController.sol";
 import "./lib/ManagerString.sol";
 import "./lib/MerkleProof.sol";
 import '@openzeppelin/contracts/utils/math/SafeMath.sol';
+import '@openzeppelin/contracts/utils/math/SafeERC20.sol';
 interface IERC20 {
     function transferFrom(
         address sender,
@@ -14,6 +15,7 @@ interface IERC20 {
 }
 contract DataContract is AutherController {
     using SafeMath for uint256;
+    using SafeERC20 for ERC20;
     IERC20  credaToken;
     mapping(address => address) public addressBinds;
     mapping(address => address[]) bindLists;
@@ -22,7 +24,7 @@ contract DataContract is AutherController {
        uint256 credit;
        bytes did; //did
        uint256 timestamp;
-       uint didStatus;
+       bool didStatus;
     }
     mapping(address => CreditInfo)  _creditInfo;
     mapping(address => address[])  creditSource;
@@ -37,8 +39,8 @@ contract DataContract is AutherController {
         credaToken=IERC20(0x6812891dD6Ab4e2ebDde659a57EB8dA5F25B0Dd3);
         credaToken=IERC20(0xc136E6B376a9946B156db1ED3A34b08AFdAeD76d);
         receiverAddress = 0xC36f3435Fe583e9489E28ae54E77e44E94d193b1;
-       // credaFee=100000000000000000; //0.1
-       // creditTimeDif = 86400; //24小时
+       credaFee=100000000000000000; //0.1
+       creditTimeDif = 86400; //24小时
 	}
     
     function changeCredaToken(address _creda) onlyOwner external {
@@ -48,6 +50,7 @@ contract DataContract is AutherController {
          credaFee = _fee;
     }
     function setReceiverAddress(address _address)  onlyOwner external {
+        require(_address != address(0),"Non-Zero Address");
         receiverAddress = _address;
     }
     function getAddressBySource(address _source) public view returns(address[] memory){
@@ -57,7 +60,7 @@ contract DataContract is AutherController {
         return bindLists[_address];
     }
     function getDidByAddress(address  _address) public view returns (bytes memory) {
-         return _creditInfo[_address].didStatus == 0? createDidByAddress(_address):_creditInfo[_address].did;
+         return !_creditInfo[_address].didStatus? createDidByAddress(_address):_creditInfo[_address].did;
          
     }
     function getCreditInfo(address _address) public view   returns(CreditInfo memory){
@@ -83,14 +86,14 @@ contract DataContract is AutherController {
        
     function updateCredit(address _address,uint256 credit,bytes32[] memory merkleProof) public {
         require(checkStatus(_address,credit,merkleProof),"Merkle verify error");
-        if(credaFee>0){
-           credaToken.transferFrom(msg.sender,receiverAddress,credaFee);
+        if(credaFee > 0){
+           credaToken.safeTransferFrom(msg.sender,receiverAddress,credaFee);
         }
          CreditInfo memory creditInfo = _creditInfo[_address];
          creditInfo.credit = credit;
-         if(creditInfo.didStatus == 0 ){
+         if(!creditInfo.didStatus  ){
             creditInfo.did = createDidByAddress(_address);
-            creditInfo.didStatus=1;
+            creditInfo.didStatus = true;
         }
         creditInfo.timestamp = block.timestamp;
         _creditInfo[_address] = creditInfo;
@@ -131,16 +134,16 @@ contract DataContract is AutherController {
         address  secondAddress = msg.sender;
         require(addressBinds[secondAddress] == address(0x0)," has bind" );
         bytes memory _value = _creditInfo[mainAddress].did;
-        if(_creditInfo[mainAddress].didStatus==0){
+        if(!_creditInfo[mainAddress].didStatus){
              _value = createDidByAddress(mainAddress);
             _creditInfo[mainAddress].did = _value;
-            _creditInfo[mainAddress].didStatus =1;
+            _creditInfo[mainAddress].didStatus = true;
             _creditInfo[secondAddress].did = _value;
             addressBinds[secondAddress] = mainAddress;
             bindLists[mainAddress].push(secondAddress);
         }else{
              _creditInfo[secondAddress].did = _value;
-            _creditInfo[secondAddress].didStatus =1;
+            _creditInfo[secondAddress].didStatus = true;
             addressBinds[secondAddress] = mainAddress;
             bindLists[mainAddress].push(secondAddress);
         }
@@ -149,7 +152,7 @@ contract DataContract is AutherController {
     function unBindAddress(address mainAddress) public   returns (bool) {
         require(mainAddress != address(0x0) && addressBinds[msg.sender] == mainAddress,"user unbind main address " );
          _creditInfo[msg.sender].did = "";
-         _creditInfo[msg.sender].didStatus=0;
+         _creditInfo[msg.sender].didStatus = false;
         delete addressBinds[msg.sender];
         emit unbindEvent(0,mainAddress,msg.sender);
          return true;

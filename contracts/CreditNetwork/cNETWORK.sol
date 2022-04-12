@@ -30,7 +30,6 @@ contract cNETWORK is AdminRole {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
 
-    address public creda;
     address public creditOracle;
     address public creditNFT;
     mapping(uint256 => bool) public activeStatus;
@@ -56,7 +55,6 @@ contract cNETWORK is AdminRole {
         address creditOracle_,
         address creditNFT_     
     ) {
-        creda = token_;
         creditOracle = creditOracle_;
         creditNFT = creditNFT_;
     }
@@ -70,7 +68,7 @@ contract cNETWORK is AdminRole {
 
     function Active(address account) public returns (bool) {
         require(ICreditNFT(creditNFT).getOwnerNFTNo(account) > 0, "No Credit NFT Exist");
-        require(activeStatus[ICreditNFT(creditNFT).getOwnerNFTNo(account)] == false, "Credit NFT Actived");
+        require(!activeStatus[ICreditNFT(creditNFT).getOwnerNFTNo(account)], "Credit NFT Actived");
         activeStatus[ICreditNFT(creditNFT).getOwnerNFTNo(account)] = true;
         netInfo[account].csSetting = 500;
         return true;
@@ -82,7 +80,7 @@ contract cNETWORK is AdminRole {
         return true;
     }
 
-    function Relation(address accountA_, address accountB_) internal returns(bool){
+    function Relation(address accountA_, address accountB_) public view returns(bool){
         return (creditRelation[accountA_][accountB_] || creditRelation[accountB_][accountA_]);
     }
 
@@ -136,21 +134,19 @@ contract cNETWORK is AdminRole {
         }
     } 
 
-    function SetCreDA(address token_) external onlyAdmin {
-        creda = token_;
-    }
-
     function SetCreditNFT(address token_) external onlyAdmin {
+        require(token_ != address(0),"Non-Zero Address");
         creditNFT = token_;
     }
 
     function SetCreditOracle(address creditOracle_) external onlyAdmin {
+        require(creditOracle_ != address(0),"Non-Zero Address");
         creditOracle = creditOracle_;
     }
   
 
-    function EfficientNetwork() public view returns(uint256){
-        uint256 EffNet = 0;
+    function EfficientNetwork() public view returns(uint256 EffNet){
+        EffNet = 0;
         for(uint256 i; i< netInfo[msg.sender].cnetwork.length; i++)
         {
             if(ICredaOracle(creditOracle).totalCredit(netInfo[msg.sender].cnetwork[i]) >= netInfo[msg.sender].csSetting)
@@ -167,7 +163,7 @@ contract cNETWORK is AdminRole {
         for(uint256 i = 0; i< _group.length; i++){
             require(_group[i] != address(0),"Wrong Data");
             require(_group[i] != account,"Wrong Data");
-            require(creditRelation[account][_group[i]] = false,"Address Exist");
+            require(!creditRelation[account][_group[i]],"Address Exist");
             netInfo[account].cnetwork.push(_group[i]);
             netInfo[account].layer1amount += 1;
             creditRelation[account][_group[i]] = true;
@@ -178,7 +174,7 @@ contract cNETWORK is AdminRole {
         for(uint256 i = 0; i< _group.length; i++){
             require(_group[i] != address(0),"Wrong Data");
             require(_group[i] != msg.sender,"Wrong Data");
-            require(creditRelation[msg.sender][_group[i]] = false,"Address Exist");
+            require(!creditRelation[msg.sender][_group[i]],"Address Exist");
             netInfo[msg.sender].cnetwork.push(_group[i]);
             netInfo[msg.sender].layer1amount += 1;
             creditRelation[msg.sender][_group[i]] = true;

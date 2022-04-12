@@ -7,7 +7,8 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "./CredaControl.sol";
+import "./CredaCtroller.sol";
+
 contract CredaCore is ERC20Burnable,CredaCtroller{
 
     using SafeMath for uint256;
@@ -15,11 +16,9 @@ contract CredaCore is ERC20Burnable,CredaCtroller{
     mapping (address => mapping(address => LpStakeInfo)) private _stakingRecords;
     mapping (address => uint256) private _unlockFactor;
     mapping (address => uint256) private _unlockBlockTime;
-    mapping(address => uint8) public mineContract;
+    mapping(address => bool) public mineContract;
     mapping (address => uint256) private _unlocks;
     uint256 public _totalUnlocked;
-
-
 
 
     struct LpStakeInfo {
@@ -60,9 +59,9 @@ contract CredaCore is ERC20Burnable,CredaCtroller{
         uint256 blockTime
     );
 
-    constructor(string memory name_, string memory symbol_) ERC20(name_, symbol_){
-        _mint(_msgSender(), 10**26); 
-        _mintUnlocked(_msgSender(),  10**26); 
+    constructor(string memory name_, string memory symbol_, address mintAddress_) ERC20(name_, symbol_){
+        _mint(mintAddress_, 10**26); 
+        _mintUnlocked(mintAddress_, 10**26); 
     }
 
     function transfer(address recipient, uint256 amount)
@@ -92,7 +91,7 @@ contract CredaCore is ERC20Burnable,CredaCtroller{
         require(recipient != address(0), "ERC20: transfer to the zero address");
         _unlocks[sender] = _unlocks[sender].sub(amount, "ERC20: transfer amount exceeds unlocked balance");
         _unlocks[recipient] = _unlocks[recipient].add(amount);
-        if(mineContract[sender] == 1){
+        if(mineContract[sender]){
             _unlocks[recipient] = _unlocks[recipient].sub(amount);
             _totalUnlocked = _totalUnlocked.sub(amount);
         }
@@ -100,11 +99,11 @@ contract CredaCore is ERC20Burnable,CredaCtroller{
         emit LOG_UNLOCK_TRANSFER(sender, recipient, amount);
     }
 
-    function setMineContract(address account, uint8 _lock) public onlyOwner{
+    function setMineContract(address account, bool _lock) public onlyOwner{
         mineContract[account] = _lock;
     }
 
-    function getMineContract(address account) public view onlyOwner returns (uint8)
+    function getMineContract(address account) public view returns (bool)
     {
         return mineContract[account];
     }
@@ -122,7 +121,7 @@ contract CredaCore is ERC20Burnable,CredaCtroller{
     }
 
     function _unfreeze(address account, uint256 amount) internal {
-        require(balanceOf(account).sub(_unlocks[account]).sub(amount) >= 0);
+        require(balanceOf(account).sub(_unlocks[account]).sub(amount) >= 0, "All tokens have been unfrozen");
         _unlocks[account] = _unlocks[account].add(amount);
         _totalUnlocked = _totalUnlocked.add(amount);
     }
@@ -196,7 +195,7 @@ contract CredaCore is ERC20Burnable,CredaCtroller{
 
     function stake(address token, uint256 amount) external  returns (bool) {
         require(_unlockFactor[token] > 0, "ERC20: FACTOR_NOT_SET");
-        require(_unlockBlockTime[token] > 0, "ERC20: BLOCK_Time_NOT_SET");
+        require(_unlockBlockTime[token] > 0, "ERC20: BLOCK_TIME_NOT_SET");
         _pullToken(token, msg.sender, amount);
         LpStakeInfo storage info = _stakingRecords[msg.sender][token];
         uint256 unlockedAmount = _settleUnlockAmount(msg.sender, token, info.amountStaked, info.blockTime);

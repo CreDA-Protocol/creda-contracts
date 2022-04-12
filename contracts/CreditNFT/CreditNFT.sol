@@ -19,12 +19,12 @@ contract CreditNFT is ERC721, AdminRole {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
 
-    address public creda;
-    address public creditOracle;
+    address public immutable creda;
+    address public immutable creditOracle;
     uint256 public totalTokenAmount;
     uint256 public totalSupply;
-    uint256 public nftNumber = 10000;
-    uint256 public mintamount = 10**18;
+    uint256 public NUM = 10000;
+    uint256 public constant mintamount = 10**18;
     mapping(uint256 => CreditStatus) public nftsDict;
     mapping(address => bool) public whiteList;    // 可以拥有超过一个NFT的地址
     mapping(address => uint256) public ownerNFT;
@@ -47,41 +47,41 @@ contract CreditNFT is ERC721, AdminRole {
         _;
     }
     modifier checkExists(uint256 _nftNo){
-        require (nftsDict[_nftNo].exists == true, "Credit NFT: no exists");
+        require (nftsDict[_nftNo].exists, "Credit NFT: no exists");
         _;
     }
 
 
 
-    function transferFrom(address from, address to, uint256 tokenId)
+    function transferFrom(address from, address to, uint256 nftNo)
         public virtual override
     {
-        if (whiteList[to] == false) {
+        if (!whiteList[to]) {
             require (balanceOf(to) == 0, "Credit NFT Exist");
         }
-        super.transferFrom(from, to, tokenId);
+        super.transferFrom(from, to, nftNo);
         ownerNFT[from] = 0;
-        ownerNFT[to] = tokenId;
+        ownerNFT[to] = nftNo;
     }
 
-    function safeTransferFrom(address from, address to, uint256 tokenId)
+    function safeTransferFrom(address from, address to, uint256 nftNo)
         public virtual override
     {
-        if (whiteList[to] == false) {
+        if (!whiteList[to]) {
             require (balanceOf(to) == 0, "Credit NFT Exist");
         }
-        super.safeTransferFrom(from, to, tokenId);
+        super.safeTransferFrom(from, to, nftNo);
         ownerNFT[from] = 0;
-        ownerNFT[to] = tokenId;
+        ownerNFT[to] = nftNo;
     }
 
-    function _safeMint(address to, uint256 tokenId)
+    function _safeMint(address to, uint256 nftNo)
         internal virtual override
     {
-        if (whiteList[to] == false) {
+        if (!whiteList[to]) {
             require (balanceOf(to) == 0, "Credit NFT Exist");
         }
-        super._safeMint(to, tokenId);
+        super._safeMint(to, nftNo);
     }
 
     function isExists(uint256 _nftNo)
@@ -134,8 +134,8 @@ contract CreditNFT is ERC721, AdminRole {
         returns (uint256 nftNo)
     {
         require(ICREDA(creda).unlockedOf(msg.sender) >= mintamount,"Balance is not enough.");
-        nftNumber++;
-        nftNo = nftNumber;
+        NUM++;
+        nftNo = NUM;
         _safeMint(msg.sender, nftNo);
         ownerNFT[msg.sender] = nftNo;
         nftsDict[nftNo] = CreditStatus({
@@ -161,6 +161,7 @@ contract CreditNFT is ERC721, AdminRole {
         nftsDict[_nftNo].amount = 0;
         _burn(_nftNo);
         totalSupply -= 1;
+        return true;
     }
 
 
@@ -209,11 +210,6 @@ contract CreditNFT is ERC721, AdminRole {
         whiteList[_addr] = _open;
     }
 
-    function setNFTNumber(uint256 _number)
-        public onlyAdmin
-    {
-        nftNumber = _number;
-    }
 
     function launchMigrate(address token, address to, uint256 amount) external onlyAdmin {
         IERC20(token).safeTransfer(to, amount);
