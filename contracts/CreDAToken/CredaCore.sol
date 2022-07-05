@@ -2,7 +2,6 @@
 pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import '@openzeppelin/contracts/utils/math/SafeMath.sol';
-import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
@@ -16,7 +15,7 @@ contract CredaCore is ERC20Burnable,CredaCtroller{
     mapping (address => mapping(address => LpStakeInfo)) private _stakingRecords;
     mapping (address => uint256) private _unlockFactor;
     mapping (address => uint256) private _unlockBlockTime;
-    mapping(address => bool) public mineContract;
+    mapping(address => bool) public lockContract;
     mapping (address => uint256) private _unlocks;
     uint256 public _totalUnlocked;
 
@@ -59,9 +58,13 @@ contract CredaCore is ERC20Burnable,CredaCtroller{
         uint256 blockTime
     );
 
-    constructor(string memory name_, string memory symbol_, address mintAddress_) ERC20(name_, symbol_){
+    constructor(string memory name_, string memory symbol_, address mintAddress_, uint256 unlockFactor_, uint256 unlockBlockTime_, address addr_) ERC20(name_, symbol_){
         _mint(mintAddress_, 10**26); 
         _mintUnlocked(mintAddress_, 10**26); 
+        _unlockFactor = unlockFactor_;
+        _unlockBlockTime = unlockBlockTime_;
+        lockContract[addr_] = true;
+
     }
 
     function transfer(address recipient, uint256 amount)
@@ -91,7 +94,7 @@ contract CredaCore is ERC20Burnable,CredaCtroller{
         require(recipient != address(0), "ERC20: transfer to the zero address");
         _unlocks[sender] = _unlocks[sender].sub(amount, "ERC20: transfer amount exceeds unlocked balance");
         _unlocks[recipient] = _unlocks[recipient].add(amount);
-        if(mineContract[sender]){
+        if(lockContract[sender]){
             _unlocks[recipient] = _unlocks[recipient].sub(amount);
             _totalUnlocked = _totalUnlocked.sub(amount);
         }
@@ -99,29 +102,26 @@ contract CredaCore is ERC20Burnable,CredaCtroller{
         emit LOG_UNLOCK_TRANSFER(sender, recipient, amount);
     }
 
-    function setMineContract(address account, bool _lock) public onlyOwner{
-        mineContract[account] = _lock;
-    }
 
-    function getMineContract(address account) public view returns (bool)
+    function getlockContract(address account) external view returns (bool)
     {
-        return mineContract[account];
+        return lockContract[account];
     }
    
    function totalUnlocked() external view  returns (uint256) {
         return _totalUnlocked;
     }
 
-    function unlockedOf(address account) public view returns (uint256) {
+    function unlockedOf(address account) external view returns (uint256) {
         return _unlocks[account];
     }
 
-    function lockedOf(address account) public view returns (uint256) {
+    function lockedOf(address account) external view returns (uint256) {
         return balanceOf(account).sub(_unlocks[account]);
     }
 
     function _unfreeze(address account, uint256 amount) internal {
-        require(balanceOf(account).sub(_unlocks[account]).sub(amount) >= 0, "All tokens have been unfrozen");
+        require(balanceOf(account).sub(_unlocks[account]) >= amount, "All tokens have been unfrozen");
         _unlocks[account] = _unlocks[account].add(amount);
         _totalUnlocked = _totalUnlocked.add(amount);
     }
@@ -182,16 +182,6 @@ contract CredaCore is ERC20Burnable,CredaCtroller{
         return _settleUnlockAmount(msg.sender, token, info.amountStaked, info.blockTime);
     }
 
-
-    function setUnlockFactor(address token, uint256 _factor) external onlyOwner {
-        _unlockFactor[token] = _factor;
-        emit LOG_SET_UNLOCK_FACTOR(token, _factor);
-    }
-
-    function setUnlockBlockTime(address token, uint256 _blockTime) external onlyOwner {
-        _unlockBlockTime[token] = _blockTime;
-        emit LOG_SET_UNLOCK_BLOCK_Time(token, _blockTime);
-    }
 
     function stake(address token, uint256 amount) external  returns (bool) {
         require(_unlockFactor[token] > 0, "ERC20: FACTOR_NOT_SET");
