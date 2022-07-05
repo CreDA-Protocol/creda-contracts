@@ -7,10 +7,10 @@ contract AutherController is OwnableUpgradeable {
         require(msg.sender == owner() || _authorizedNodes[msg.sender],"Not an authorized node");
         _;
     }
-    function setAuthorizedtNode(address node) onlyOwner public  {
+    function setAuthorizedtNode(address node) onlyOwner external  {
         _authorizedNodes[node] = true;
     }
-    function removeAuthorizedNode(address node) onlyOwner public {
+    function removeAuthorizedNode(address node) onlyOwner external {
         _authorizedNodes[node] = false;
     }
 }

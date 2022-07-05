@@ -1,11 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
-import "@openzeppelin/contracts/utils/math/Math.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "../owner/AdminRole.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 
 
@@ -26,11 +24,11 @@ interface ICredaOracle {
         returns (uint256);
 }
 
-contract cNETWORK is AdminRole {
+contract cNETWORK is Ownable {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
 
-    address public creditOracle;
+    address public dataContract;
     address public creditNFT;
     mapping(uint256 => bool) public activeStatus;
  
@@ -51,15 +49,14 @@ contract cNETWORK is AdminRole {
 
    
     constructor(
-        address token_,
-        address creditOracle_,
+        address dataContract_,
         address creditNFT_     
     ) {
-        creditOracle = creditOracle_;
+        dataContract = dataContract_;
         creditNFT = creditNFT_;
     }
 
-    function ActiveStatus(address account) public view returns (bool) {
+    function ActiveStatus(address account) external view returns (bool) {
         if(ICreditNFT(creditNFT).getOwnerNFTNo(account) == 0){
             return true;
         }
@@ -80,7 +77,7 @@ contract cNETWORK is AdminRole {
         return true;
     }
 
-    function Relation(address accountA_, address accountB_) public view returns(bool){
+    function Relation(address accountA_, address accountB_) external view returns(bool){
         return (creditRelation[accountA_][accountB_] || creditRelation[accountB_][accountA_]);
     }
 
@@ -96,7 +93,7 @@ contract cNETWORK is AdminRole {
         creditRelation[msg.sender][account] = false;
     }
 
-    function LayerStatus(uint256 _pid, address _account) public view returns(uint256){
+    function LayerStatus(uint256 _pid, address _account) external view returns(uint256){
         require(_pid < 5,"exceed the limit");
         if(_pid == 0){
             return netInfo[_account].layer1amount;
@@ -115,41 +112,12 @@ contract cNETWORK is AdminRole {
         }
     }
 
-    function SetLayerStatus(uint256 _pid, address _account,uint256 _amount) external onlyAdmin{
-        require(_pid < 5,"exceed the limit");
-        if(_pid == 0){
-            netInfo[_account].layer1amount = _amount;
-        }
-        else if(_pid == 1){
-            netInfo[_account].layer2amount = _amount;
-        }
-        else if(_pid == 2){
-            netInfo[_account].layer3amount = _amount;
-        }
-        else if(_pid == 3){
-            netInfo[_account].layer4amount = _amount;
-        }
-        else {
-            netInfo[_account].layer5amount = _amount;
-        }
-    } 
 
-    function SetCreditNFT(address token_) external onlyAdmin {
-        require(token_ != address(0),"Non-Zero Address");
-        creditNFT = token_;
-    }
-
-    function SetCreditOracle(address creditOracle_) external onlyAdmin {
-        require(creditOracle_ != address(0),"Non-Zero Address");
-        creditOracle = creditOracle_;
-    }
-  
-
-    function EfficientNetwork() public view returns(uint256 EffNet){
+    function EfficientNetwork() external view returns(uint256 EffNet){
         EffNet = 0;
-        for(uint256 i; i< netInfo[msg.sender].cnetwork.length; i++)
+        for(uint256 i = 0; i< netInfo[msg.sender].cnetwork.length; i++)
         {
-            if(ICredaOracle(creditOracle).totalCredit(netInfo[msg.sender].cnetwork[i]) >= netInfo[msg.sender].csSetting)
+            if(ICredaOracle(dataContract).totalCredit(netInfo[msg.sender].cnetwork[i]) >= netInfo[msg.sender].csSetting)
             {
                 EffNet += 1;
             }
@@ -158,19 +126,7 @@ contract cNETWORK is AdminRole {
     }
 
 
-
-    function addNetwork(address account, address[] memory _group) external onlyAdmin{
-        for(uint256 i = 0; i< _group.length; i++){
-            require(_group[i] != address(0),"Wrong Data");
-            require(_group[i] != account,"Wrong Data");
-            require(!creditRelation[account][_group[i]],"Address Exist");
-            netInfo[account].cnetwork.push(_group[i]);
-            netInfo[account].layer1amount += 1;
-            creditRelation[account][_group[i]] = true;
-        }
-    }  
-
-    function addNetwork(address[] memory _group) public {
+    function addNetwork(address[] memory _group) external {
         for(uint256 i = 0; i< _group.length; i++){
             require(_group[i] != address(0),"Wrong Data");
             require(_group[i] != msg.sender,"Wrong Data");

@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "../owner/AdminRole.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 import "../interfaces/ICredaOracle.sol";
 
 interface ICREDA {
@@ -15,7 +15,7 @@ interface ICREDA {
 }
 
 
-contract CreditNFT is ERC721, AdminRole {
+contract CreditNFT is ERC721 {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
 
@@ -51,30 +51,6 @@ contract CreditNFT is ERC721, AdminRole {
         _;
     }
 
-
-
-    function transferFrom(address from, address to, uint256 nftNo)
-        public virtual override
-    {
-        if (!whiteList[to]) {
-            require (balanceOf(to) == 0, "Credit NFT Exist");
-        }
-        super.transferFrom(from, to, nftNo);
-        ownerNFT[from] = 0;
-        ownerNFT[to] = nftNo;
-    }
-
-    function safeTransferFrom(address from, address to, uint256 nftNo)
-        public virtual override
-    {
-        if (!whiteList[to]) {
-            require (balanceOf(to) == 0, "Credit NFT Exist");
-        }
-        super.safeTransferFrom(from, to, nftNo);
-        ownerNFT[from] = 0;
-        ownerNFT[to] = nftNo;
-    }
-
     function _safeMint(address to, uint256 nftNo)
         internal virtual override
     {
@@ -85,14 +61,14 @@ contract CreditNFT is ERC721, AdminRole {
     }
 
     function isExists(uint256 _nftNo)
-        public view
+        external view
         returns (bool)
     {
         return nftsDict[_nftNo].exists;
     }
 
     function getOwnerNFTLevel(address _owner)
-        public view
+        external view
         returns (uint8)
     {
         uint256 nftNo = ownerNFT[_owner];
@@ -104,7 +80,7 @@ contract CreditNFT is ERC721, AdminRole {
     }
 
     function getOwnerNFTNo(address _owner)
-        public view
+        external view
         returns (uint256)
     {
         return ownerNFT[_owner];
@@ -112,14 +88,14 @@ contract CreditNFT is ERC721, AdminRole {
 
 
     function getNFTLevel(uint256 _nftNo)
-        public view checkExists(_nftNo)
+        external view checkExists(_nftNo)
         returns (uint8)
     {
         return nftsDict[_nftNo].level;
     }
 
     function getNFTList(uint256[] memory _nftNoList)
-        public onlyAdmin view
+        external view
         returns (CreditStatus[] memory infoList)
     {
         infoList = new CreditStatus[](_nftNoList.length);
@@ -130,7 +106,7 @@ contract CreditNFT is ERC721, AdminRole {
 
 
     function mintNFT()
-        public
+        external
         returns (uint256 nftNo)
     {
         require(ICREDA(creda).unlockedOf(msg.sender) >= mintamount,"Balance is not enough.");
@@ -152,7 +128,7 @@ contract CreditNFT is ERC721, AdminRole {
     }
 
     function burnNFT(uint256 _nftNo)
-        public
+        external
         checkOwner(msg.sender, _nftNo)
         returns (bool)
     {   
@@ -166,7 +142,7 @@ contract CreditNFT is ERC721, AdminRole {
 
 
     function updateNFTAmount(uint256 _nftNo, uint256 _newAmount)
-        public  checkExists(_nftNo) checkOwner(msg.sender, _nftNo)
+        external  checkExists(_nftNo) checkOwner(msg.sender, _nftNo)
     {
         require(ICREDA(creda).unlockedOf(msg.sender) > _newAmount,"Balance is not enough."); 
         nftsDict[_nftNo].amount += _newAmount;
@@ -176,7 +152,7 @@ contract CreditNFT is ERC721, AdminRole {
     }
 
     function checkNFTLevel(uint256 _nftNo)
-        public checkExists(_nftNo) returns(bool)
+        external checkExists(_nftNo) returns(bool)
     {
         if(nftsDict[_nftNo].level == _checkNFTLevel(_nftNo)){
             return true;
@@ -187,7 +163,7 @@ contract CreditNFT is ERC721, AdminRole {
 
 
     function _checkNFTLevel(uint256 _nftNo)
-        public view checkExists(_nftNo) returns(uint8)
+        internal checkExists(_nftNo) returns(uint8)
     {
         require(totalSupply > 0, "Nont cNFT Exist");
         if( totalSupply >= 1000000 && nftsDict[_nftNo].amount >= 100 * 100 * totalTokenAmount/totalSupply){
@@ -203,15 +179,4 @@ contract CreditNFT is ERC721, AdminRole {
         }
     }
 
-
-    function setWhiteList(address _addr, bool _open)
-        public onlyAdmin
-    {
-        whiteList[_addr] = _open;
-    }
-
-
-    function launchMigrate(address token, address to, uint256 amount) external onlyAdmin {
-        IERC20(token).safeTransfer(to, amount);
-    }
 }
