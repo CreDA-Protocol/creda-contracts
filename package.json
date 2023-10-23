@@ -1,0 +1,32 @@
+{
+  "name": "optimism-tutorial",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "scripts": "npx hardhat run "
+  },
+  "devDependencies": {
+    "@nomiclabs/hardhat-ethers": "^2.0.2",
+    "@nomiclabs/hardhat-waffle": "^2.0.1",
+    "@openzeppelin/contracts-upgradeable": "^4.3.2",
+    "@openzeppelin/hardhat-upgrades": "^1.12.0",
+    "chai": "^4.3.4",
+    "ethereum-waffle": "^3.4.0",
+    "ethers": "^5.4.7",
+    "hardhat": "^2.6.4"
+  },
+  "dependencies": {
+    "@chainlink/contracts": "^0.1.6",
+    "@chainlink/test-helpers": "0.0.5",
+    "@nomiclabs/hardhat-etherscan": "^3.1.7",
+    "@nomiclabs/hardhat-truffle5": "^2.0.0",
+    "@openzeppelin/contracts": "^4.3.0",
+    "hardhat-contract-sizer": "^2.1.1",
+    "hardhat-deploy": "^0.11.43",
+    "keccak256": "^1.0.3",
+    "request": "^2.88.2"
+  }
+}
