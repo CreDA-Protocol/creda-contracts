@@ -11,6 +11,8 @@ const main = async () => {
     let accounts = await hEether.getSigners();
     let deployer = accounts[0];
 
+    console.log("address : ",deployer.address);
+
     // constructor(string memory name, string memory symbol, string memory baseURI) ERC721(name, symbol) {
     const dataContractFactory = await ethers.getContractFactory("DataContract",deployer);
 

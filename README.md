@@ -1,87 +1,6 @@
 # CreDA Protocol
 
-#CreDA API Description
-
-
-Request address
----------------
-https://contracts-elamain.creda.app/api/public/home/token/generate
-
-
-Request method
----------------
-
-GET
-
-
-
-Request parameters
-------------------
-
-|Header Parameter|Data Type|Required|Description|
-| ------ | ------ | ------ | ------ |
-|access_token|string|yes||
-|Query Parameter|Data Type|Required|Description|
-| ------ | ------ | ------ | ------ |
-|address|string|yes|address informatin|
-
-Return parameters
------------------
-
-|Parameter Name|Data Type|Description|
-| ------ | ------ | ------ |
-| code | integer | Return code 200 is success |
-| message | string | "success" or reason for failure |
-| data | Object | Data Object |
-
-
-Data Object
------------
-
-| Parameter Name | Data Type | Description |
-| ------ | ------ | ------ |
-| score | Array | socre object |
-| timestamp | string | score timestamp |
-
-Score array item description
-----------------------------
-
-| Attribute Name | Data Type | Description |
-| ------ | ------ | ------ |
-| itemName | string | name of score item |
-| value | string | score value |
-
-
-Example Return Value
---------------------
-
-     {
-        "code": 200,
-        "message": "SUCCESS",
-        "data": {
-        "score":[
-                {
-                    "itemName":"assets",
-                    "value":100
-                },
-                {
-                    "itemName":"activities",
-                    "value":100
-                },
-                {
-                    "itemName":"risk",
-                    "value":100
-                },
-                {
-                    "itemName":"credit",
-                    "value":100
-                }
-            ]
-        }
-    }
-
-
-# Dependencies
+## Dependencies
 
 Make sure you're running a version of node compliant with the `engines` requirement in `package.json`, or install Node Version Manager [`nvm`](https://github.com/creationix/nvm) and run `nvm use` to use the correct version of node.
 
@@ -116,10 +35,48 @@ yarn scripts scripts/2setFee.js --network celo
 
 ```
 
-# Contribution
+## the deployment scripts
+The following are the deployment and parameter setting steps of celo. Specify the published blockchain network through --network.The networks supported by this project include:
+- celo
+- esc
+- local
+
+All scripts are under the scripts folder
+  
+### 1deployUpgradeDataContract.js
+This script deploys the DataContract contract to the chain.
+ 
+### 2setFee.js
+Set the cost of creda calls, the default cost is 0
+
+### 3setNode.js
+Set the address of the node
+
+### 4setMerkleRoot.js
+Set up merkle root for creda credit data
+
+### 5checkStatus.js
+Verify the validity and consistency of personal data via merkle root
+
+## deployment order (contracts depending on others)
+This contract(DataContract) relies on Creditcore as a token for fee payment. If the fee is set to 0, it does not need to be called.
+
+ ## how to upgradable
+This contract is an upgradeable contract. Through the upgrade method of openzeppelin, the contract can be upgraded. For details, please refer to
+[Writing Upgradeable Contracts](https://docs.openzeppelin.com/upgrades-plugins/1.x/writing-upgradeable)
+
+
+## Contribution
 Thank you for considering to help out with the source code! We welcome contributions from anyone on the internet, and are grateful for even the smallest of fixes!
 
 If you'd like to contribute to creda-contracts, please fork, fix, commit and send a pull request for the maintainers to review and merge into the main code base. 
+
+## contract addresses 
+
+|Chain |Contract Name |Contract Address|
+| ------ | ------ | ------ |
+|ESC TestNet|DataContract|0x36aFfC79ABBd2F8Aaf32800A1333c524aF3bCE79|
+|Celo |DataContract|0x878063db2d3d54e4F18e7bC448FA56A0e111C054|
 
 
 ## License  
