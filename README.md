@@ -35,7 +35,7 @@ yarn scripts scripts/2setFee.js --network celo
 
 ```
 
-## the deployment scripts
+## Deployment scripts
 The following are the deployment and parameter setting steps of celo. Specify the published blockchain network through --network.The networks supported by this project include:
 - celo
 - esc
@@ -58,10 +58,10 @@ Set up merkle root for creda credit data
 ### 5checkStatus.js
 Verify the validity and consistency of personal data via merkle root
 
-## deployment order (contracts depending on others)
+## Deployment order (contracts depending on others)
 This contract(DataContract) relies on Creditcore as a token for fee payment. If the fee is set to 0, it does not need to be called.
 
- ## how to upgradable
+ ## How to upgradable
 This contract is an upgradeable contract. Through the upgrade method of openzeppelin, the contract can be upgraded. For details, please refer to
 [Writing Upgradeable Contracts](https://docs.openzeppelin.com/upgrades-plugins/1.x/writing-upgradeable)
 
@@ -71,7 +71,7 @@ Thank you for considering to help out with the source code! We welcome contribut
 
 If you'd like to contribute to creda-contracts, please fork, fix, commit and send a pull request for the maintainers to review and merge into the main code base. 
 
-## contract addresses 
+## Contract addresses 
 
 |Chain |Contract Name |Contract Address|
 | ------ | ------ | ------ |
