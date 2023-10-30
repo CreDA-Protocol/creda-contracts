@@ -34,6 +34,15 @@ yarn scripts scripts/1deployUpgradeDataContract.js --network celo
 yarn scripts scripts/2setFee.js --network celo
 
 ```
+
+## CreDA contracts
+
+| Contract     | Description                                                                                                                                                                      |
+| ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| CredaCore    | CreDA **ERC20 token**. Deployed only on Arbitrum and ESC so far.                                                                                                                 |
+| DataContract | The **Oracle** contract that deals with user accountsand credit scores.                                                                                                          |
+| CreditNFT    | **Credit NFT** contract, into which users can mint/burn/upgrade/present their cNFT. The cNFT holds various information such as the credit score, NFT level, addresses list, etc. |
+
 ## Deployed contract addresses
 
 | Chain       | Contract Name | Contract Address                           |
@@ -47,25 +56,20 @@ The following are the deployment and parameter setting steps of celo. Specify th
 - Elastos ESC
 - local
 
-All scripts are under the scripts folder.
+All scripts are under the *scripts/* folder.
 
-### 1deployUpgradeDataContract.js
-This script deploys the DataContract contract to the chain.
-
-### 2setFee.js
-Set the cost of creda calls, the default cost is 0
-
-### 3setNode.js
-Set the address of the node
-
-### 4setMerkleRoot.js
-Set up merkle root for creda credit data
-
-### 5checkStatus.js
-Verify the validity and consistency of personal data via merkle root
+| Script name                   | Description                                                                                                                  |
+| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| 1deployUpgradeDataContract.js | This script deploys the DataContract contract to the chain.                                                                  |
+| 2setFee.js                    | Sets the cost (ie: CREDA token fees to update a credit score) of creda calls, the default cost is 0.                         |
+| 3setNode.js                   | Sets the wallet address of the oracle/backend node. This wallet address gets write access to update the merkle root.         |
+| 4setMerkleRoot.js             | Sets up the merkle root for creda credit data. This merkle root is then updated daily by authorized nodes (oracle backends). |
+| 5checkStatus.js               | Test call with a simulated score in order the ensure the validity and consistency between computed data and the merkle root  |
 
 ## Deployment order (contracts depending on others)
-This contract(DataContract) relies on Creditcore as a token for fee payment. If the fee is set to 0, it does not need to be called.
+1. (Optionnal) CREDA ERC20 token (CreditCore).
+1. (Mandatory) The **DataContract** relies on the CREDA ERC20 token (CreditCore) for fees payments. For chains where it is decided to set a fee to 0, the deployment of the CREDA token contract is not necessary. In this case, give null as CREDA contract parameter to other contracts.
+1. (Mandatory) The **CreditNFT** contract, as it requires the CREDA token and the oracle contract to be both deployed. In theory, the presence of the ERC20 contract is **mandatory** as the cNFT contract spends tokens to mint/upgrade the cNFT. Though on chains like Celo, the cNFT contract has been modified for now to remove this requirement and make minting free.
 
 ## How to upgrade upgradeable contracts
 This contract is an upgradeable contract. Through the upgrade method of openzeppelin, the contract can be upgraded. For details, please refer to
