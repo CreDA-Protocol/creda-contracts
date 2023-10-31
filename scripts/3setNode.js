@@ -9,7 +9,7 @@ const main = async () => {
     let chainId = await getChainId();
     console.log("chainId is :" + chainId);
 
-    let autherAddress = "";
+    let autherAddress = "0x9D16512DD5b6C96E9E2196d30ff44F31Ca2d6077";
 
     let accounts = await hEether.getSigners();
     let deployer = accounts[0];

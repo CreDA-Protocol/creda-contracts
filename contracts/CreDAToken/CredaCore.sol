@@ -19,9 +19,6 @@ contract CredaCore is ERC20Burnable,CredaCtroller{
     mapping (address => uint256) private _unlocks;
     uint256 public _totalUnlocked;
 
-
-
-
     struct LpStakeInfo {
         uint256 amountStaked;
         uint256 blockTime;
