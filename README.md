@@ -54,8 +54,9 @@ yarn scripts scripts/2setFee.js --network celo
 | Chain       | Contract Name | Contract Address                           |
 | ----------- | ------------- | ------------------------------------------ |
 | ESC TestNet | DataContract  | 0x36aFfC79ABBd2F8Aaf32800A1333c524aF3bCE79 |
-| ESC TestNet | CreditNFT  | 0xd4563C741DE9C13F1Fdc31467AC6eAc451e10f57 |
+| ESC TestNet | CreditNFT     | 0xd4563C741DE9C13F1Fdc31467AC6eAc451e10f57 |
 | Celo        | DataContract  | 0x878063db2d3d54e4F18e7bC448FA56A0e111C054 |
+| Celo        | CreditNFT     | 0xDe19103a6Ef95312FF1bA093a9c78904D947A419 |
 
 ### Token contract
 
