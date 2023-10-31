@@ -54,6 +54,7 @@ yarn scripts scripts/2setFee.js --network celo
 | Chain       | Contract Name | Contract Address                           |
 | ----------- | ------------- | ------------------------------------------ |
 | ESC TestNet | DataContract  | 0x36aFfC79ABBd2F8Aaf32800A1333c524aF3bCE79 |
+| ESC TestNet | CreditNFT  | 0xd4563C741DE9C13F1Fdc31467AC6eAc451e10f57 |
 | Celo        | DataContract  | 0x878063db2d3d54e4F18e7bC448FA56A0e111C054 |
 
 ## Deployment scripts
@@ -70,8 +71,11 @@ All scripts are under the *scripts/* folder.
 | 2setFee.js                    | Sets the cost (ie: CREDA token fees to update a credit score) of creda calls, the default cost is 0.                         |
 | 3setNode.js                   | Sets the wallet address of the oracle/backend node. This wallet address gets write access to update the merkle root.         |
 | 4setMerkleRoot.js             | Sets up the merkle root for creda credit data. This merkle root is then updated daily by authorized nodes (oracle backends). |
-| 5checkStatus.js               | Test call with a simulated score in order the ensure the validity and consistency between computed data and the merkle root  |
-
+| 5checkStatus.js               | Test call with a simulated score in order the ensure the validity and consistency between computed data and the merkle root. |
+| 6deployNFT.js                 | This script deploys the CredaNFT contract to the chain.                                                                      |
+| 7mintNFT.js                   | This script mint the NFT contract to the chain.                                                                              |
+| 8updateNFTAmount.js           | This script update the NFT amount.                                                                                           |
+| 9burnNFT.js                   | This script burn the NFT by nft ID.                                                                                          |
 ## Deployment order (contracts depending on others)
 1. (Optionnal) CREDA ERC20 token (CreditCore).
 1. (Mandatory) The **DataContract** relies on the CREDA ERC20 token (CreditCore) for fees payments. For chains where it is decided to set a fee to 0, the deployment of the CREDA token contract is not necessary. In this case, give null as CREDA contract parameter to other contracts.
