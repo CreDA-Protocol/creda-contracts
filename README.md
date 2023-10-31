@@ -35,13 +35,19 @@ yarn scripts scripts/2setFee.js --network celo
 
 ```
 
-## CreDA contracts
+## CreDA core contracts
 
 | Contract     | Description                                                                                                                                                                      |
 | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | CredaCore    | CreDA **ERC20 token**. Deployed only on Arbitrum and ESC so far.                                                                                                                 |
 | DataContract | The **Oracle** contract that deals with user accountsand credit scores.                                                                                                          |
 | CreditNFT    | **Credit NFT** contract, into which users can mint/burn/upgrade/present their cNFT. The cNFT holds various information such as the credit score, NFT level, addresses list, etc. |
+
+## Other related contracts
+
+| Contract                            | Description                                                                                                                                                                                                                                                                                                                     |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| InitialMint, PersonalDataMinePool** | Those contracts were inherited from other projects and modified for creda. While they are not part of the core creda offer, they are used to let users claim their initial CREDA tokens and manage locked vs unlocked states, etc. Different chains user different version os those contracts (TODO: explain which one and why) |
 
 ## Deployed contract addresses
 
