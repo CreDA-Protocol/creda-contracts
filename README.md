@@ -68,11 +68,12 @@ yarn scripts scripts/2setFee.js --network celo
 
 ### Credit NFT contract
 
-| Chain    | Contract Address                           |
-| -------- | ------------------------------------------ |
-| ESC      | 0x0E0e0fCb700c3CfEe1AeEa5c1d7A21dd90d1ce7E |
-| Arbitrum | 0x7308a054F7ADb93C286529aDc954976377eB0cF0 |
-| Ropsten  | 0x67EBeB38Ce79E0A3B723bA42393910504db28758 |
+| Chain       | Contract Address                           |
+| ----------- | ------------------------------------------ |
+| ESC         | 0x0E0e0fCb700c3CfEe1AeEa5c1d7A21dd90d1ce7E |
+| ESC TestNet | 0xd4563C741DE9C13F1Fdc31467AC6eAc451e10f57 |
+| Arbitrum    | 0x7308a054F7ADb93C286529aDc954976377eB0cF0 |
+| Ropsten     | 0x67EBeB38Ce79E0A3B723bA42393910504db28758 |
 
 ## Deployment scripts
 The following are the deployment and parameter setting steps of celo. Specify the published blockchain network through --network. The networks supported by this project include:
