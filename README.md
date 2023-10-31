@@ -51,10 +51,28 @@ yarn scripts scripts/2setFee.js --network celo
 
 ## Deployed contract addresses
 
-| Chain       | Contract Name | Contract Address                           |
-| ----------- | ------------- | ------------------------------------------ |
-| ESC TestNet | DataContract  | 0x36aFfC79ABBd2F8Aaf32800A1333c524aF3bCE79 |
-| Celo        | DataContract  | 0x878063db2d3d54e4F18e7bC448FA56A0e111C054 |
+### Token contract
+
+| Chain    | Contract Address                           |
+| -------- | ------------------------------------------ |
+| ESC      | 0xc136E6B376a9946B156db1ED3A34b08AFdAeD76d |
+| Arbitrum | 0xc136E6B376a9946B156db1ED3A34b08AFdAeD76d |
+| Ropsten  | 0x6812891dD6Ab4e2ebDde659a57EB8dA5F25B0Dd3 |
+
+### Data contract
+
+| Chain       | Contract Address                           |
+| ----------- | ------------------------------------------ |
+| Celo        | 0x878063db2d3d54e4F18e7bC448FA56A0e111C054 |
+| ESC TestNet | 0x36aFfC79ABBd2F8Aaf32800A1333c524aF3bCE79 |
+
+### Credit NFT contract
+
+| Chain    | Contract Address                           |
+| -------- | ------------------------------------------ |
+| ESC      | 0x0E0e0fCb700c3CfEe1AeEa5c1d7A21dd90d1ce7E |
+| Arbitrum | 0x7308a054F7ADb93C286529aDc954976377eB0cF0 |
+| Ropsten  | 0x67EBeB38Ce79E0A3B723bA42393910504db28758 |
 
 ## Deployment scripts
 The following are the deployment and parameter setting steps of celo. Specify the published blockchain network through --network. The networks supported by this project include:
