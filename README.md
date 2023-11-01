@@ -49,15 +49,6 @@ yarn scripts scripts/2setFee.js --network celo
 | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | InitialMint, PersonalDataMinePool** | Those contracts were inherited from other projects and modified for creda. While they are not part of the core creda offer, they are used to let users claim their initial CREDA tokens and manage locked vs unlocked states, etc. Different chains user different version os those contracts (TODO: explain which one and why) |
 
-## Deployed contract addresses
-
-| Chain       | Contract Name | Contract Address                           |
-| ----------- | ------------- | ------------------------------------------ |
-| ESC TestNet | DataContract  | 0x36aFfC79ABBd2F8Aaf32800A1333c524aF3bCE79 |
-| ESC TestNet | CreditNFT     | 0xd4563C741DE9C13F1Fdc31467AC6eAc451e10f57 |
-| Celo        | DataContract  | 0x878063db2d3d54e4F18e7bC448FA56A0e111C054 |
-| Celo        | CreditNFT     | 0xDe19103a6Ef95312FF1bA093a9c78904D947A419 |
-
 ### Token contract
 
 | Chain    | Contract Address                           |
@@ -77,6 +68,7 @@ yarn scripts scripts/2setFee.js --network celo
 
 | Chain       | Contract Address                           |
 | ----------- | ------------------------------------------ |
+| Celo        | 0xDe19103a6Ef95312FF1bA093a9c78904D947A419 |
 | ESC         | 0x0E0e0fCb700c3CfEe1AeEa5c1d7A21dd90d1ce7E |
 | ESC TestNet | 0xd4563C741DE9C13F1Fdc31467AC6eAc451e10f57 |
 | Arbitrum    | 0x7308a054F7ADb93C286529aDc954976377eB0cF0 |
