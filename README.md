@@ -49,7 +49,7 @@ yarn scripts scripts/2setFee.js --network celo
 | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | InitialMint, PersonalDataMinePool** | Those contracts were inherited from other projects and modified for creda. While they are not part of the core creda offer, they are used to let users claim their initial CREDA tokens and manage locked vs unlocked states, etc. Different chains user different version os those contracts (TODO: explain which one and why) |
 
-### Token contract
+### ERC20 token contract
 
 | Chain    | Contract Address                           |
 | -------- | ------------------------------------------ |
@@ -57,23 +57,31 @@ yarn scripts scripts/2setFee.js --network celo
 | Arbitrum | 0xc136E6B376a9946B156db1ED3A34b08AFdAeD76d |
 | Ropsten  | 0x6812891dD6Ab4e2ebDde659a57EB8dA5F25B0Dd3 |
 
-### Data contract
-
-| Chain       | Contract Address                           |
-| ----------- | ------------------------------------------ |
-| Celo        | 0x878063db2d3d54e4F18e7bC448FA56A0e111C054 |
-| ESC TestNet | 0x36aFfC79ABBd2F8Aaf32800A1333c524aF3bCE79 |
-
 ### Credit NFT contract
 
-| Chain       | Contract Address                           |
-| ----------- | ------------------------------------------ |
-| Celo        | 0xDe19103a6Ef95312FF1bA093a9c78904D947A419 |
-| ESC         | 0x0E0e0fCb700c3CfEe1AeEa5c1d7A21dd90d1ce7E |
-| ESC TestNet | 0xd4563C741DE9C13F1Fdc31467AC6eAc451e10f57 |
-| Arbitrum    | 0x7308a054F7ADb93C286529aDc954976377eB0cF0 |
-| Ropsten     | 0x67EBeB38Ce79E0A3B723bA42393910504db28758 |
+| Chain       | Contract Address                           | Block explorer source code   |
+| ----------- | ------------------------------------------ | ---------------------------- |
+| Celo        | 0xDe19103a6Ef95312FF1bA093a9c78904D947A419 |                              |
+| ESC         | 0x0E0e0fCb700c3CfEe1AeEa5c1d7A21dd90d1ce7E | Not verified / Not available |
+| ESC TestNet | 0xd4563C741DE9C13F1Fdc31467AC6eAc451e10f57 |                              |
+| Arbitrum    | 0x7308a054F7ADb93C286529aDc954976377eB0cF0 | Not verified / Not available |
+| Ropsten     | 0x67EBeB38Ce79E0A3B723bA42393910504db28758 |                              |
 
+### Data contract
+
+| Chain       | Contract Address                           | Notes                  |
+| ----------- | ------------------------------------------ | ---------------------- |
+| Celo        | 0x878063db2d3d54e4F18e7bC448FA56A0e111C054 |                        |
+| ESC         | 0xF8389a26E7ec713D15E7Fe9376B06CB63dE27624 | UNSURE - TEST ON GOING |
+| Arbitrum    | 0x45def2f1eb5fb5235e9a4848fe1972ba9fc2f700 | UNSURE - TEST ON GOING |
+| ESC TestNet | 0x36aFfC79ABBd2F8Aaf32800A1333c524aF3bCE79 |                        |
+
+## Different behaviours between chains (2023.11.16)
+
+- ESC and arbitrum have a CREDA token. Users can stake / use DeFi features such as banking. They have cNFT contracts, which according to our source code requires the data contract (oracle) in the constructor. Though we don't seem to be able to find those data contracts on ESC and arbitrum.
+  - Note: after contract creation input decryption on ESC, it appears 0xF8389a26E7ec713D15E7Fe9376B06CB63dE27624 could be a "oracle" contract on ESC (second constructor parameter after the creda token address) - upgrade proxy address. Is this the "data contract" as we have it in latest source code?
+  - On arbitrum, the oracle address passed to the cNFT constructor is 0x45def2f1eb5fb5235e9a4848fe1972ba9fc2f700
+- The cNFT contract of some chains like Celo, which originally requires to access the ERC20 token to pay fees while minting cNFTs, has been modified in order to remove the dependency on the ERC20 token when no ERC20 token is available.
 
 ## Deployment scripts
 The following are the deployment and parameter setting steps of celo. Specify the published blockchain network through --network. The networks supported by this project include:
@@ -94,6 +102,7 @@ All scripts are under the *scripts/* folder.
 | 7mintNFT.js                   | This script mint the NFT contract to the chain.                                                                              |
 | 8updateNFTAmount.js           | This script update the NFT amount.                                                                                           |
 | 9burnNFT.js                   | This script burn the NFT by nft ID.                                                                                          |
+
 ## Deployment order (contracts depending on others)
 1. (Optionnal) CREDA ERC20 token (CreditCore).
 1. (Mandatory) The **DataContract** relies on the CREDA ERC20 token (CreditCore) for fees payments. For chains where it is decided to set a fee to 0, the deployment of the CREDA token contract is not necessary. In this case, give null as CREDA contract parameter to other contracts.
