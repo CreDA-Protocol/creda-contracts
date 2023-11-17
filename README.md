@@ -81,6 +81,7 @@ yarn scripts scripts/2setFee.js --network celo
 - ESC and arbitrum have a CREDA token. Users can stake / use DeFi features such as banking. They have cNFT contracts, which according to our source code requires the data contract (oracle) in the constructor. Though we don't seem to be able to find those data contracts on ESC and arbitrum.
   - Note: after contract creation input decryption on ESC, it appears 0xF8389a26E7ec713D15E7Fe9376B06CB63dE27624 could be a "oracle" contract on ESC (second constructor parameter after the creda token address) - upgrade proxy address. Is this the "data contract" as we have it in latest source code?
   - On arbitrum, the oracle address passed to the cNFT constructor is 0x45def2f1eb5fb5235e9a4848fe1972ba9fc2f700
+  - Note 2023.11.17: those addresses are actually related to "InitialMint"/"APIConsumer" contracts for which we don't have source code. They are not related to data contract. It's also probably uneasy/not doable to preserve the existing cNFT contract but change its creditOracle address to become a data contract.
 - The cNFT contract of some chains like Celo, which originally requires to access the ERC20 token to pay fees while minting cNFTs, has been modified in order to remove the dependency on the ERC20 token when no ERC20 token is available.
 
 ## Deployment scripts
