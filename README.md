@@ -71,7 +71,7 @@ yarn scripts scripts/2setFee.js --network celo
 
 | Chain       | Contract Address                           | Notes                  |
 | ----------- | ------------------------------------------ | ---------------------- |
-| Celo        | 0x878063db2d3d54e4F18e7bC448FA56A0e111C054 |                        |
+| Celo        | 0xBc736a54dD3FE55db6C752c5F495A331f2855377 |                        |
 | ESC         | 0xF8389a26E7ec713D15E7Fe9376B06CB63dE27624 | UNSURE - TEST ON GOING |
 | Arbitrum    | 0x45def2f1eb5fb5235e9a4848fe1972ba9fc2f700 | UNSURE - TEST ON GOING |
 | ESC TestNet | 0x36aFfC79ABBd2F8Aaf32800A1333c524aF3bCE79 |                        |
