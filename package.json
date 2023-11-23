@@ -24,6 +24,7 @@
     "@nomiclabs/hardhat-etherscan": "^3.1.7",
     "@nomiclabs/hardhat-truffle5": "^2.0.0",
     "@openzeppelin/contracts": "^4.3.0",
+    "dotenv": "^16.3.1",
     "hardhat-contract-sizer": "^2.1.1",
     "hardhat-deploy": "^0.11.43",
     "keccak256": "^1.0.3",
